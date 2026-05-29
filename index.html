@@ -22,15 +22,15 @@
     </section>
 
     <section class="card">
-      <h2>2. サービス別 更新数値</h2>
-      <p class="hint">複数期間ぶん入力すると推移分析が可能になります</p>
+      <h2>2. サービス別 更新数値（単位：万円）</h2>
+      <p class="hint">複数期間ぶん入力すると推移分析が可能になります。金額は <strong>1万円刻み</strong> で入力してください。</p>
       <table id="salesTable">
         <thead>
           <tr>
             <th>識別記号</th>
             <th>期間ラベル</th>
-            <th>更新母数売上</th>
-            <th>実際の更新売上</th>
+            <th>更新母数売上（万円）</th>
+            <th>実際の更新売上（万円）</th>
             <th>削除</th>
           </tr>
         </thead>
@@ -41,13 +41,18 @@
 
     <section class="card">
       <h2>3. 更新NG理由（カテゴリ別件数）</h2>
-      <div id="ngReasons">
-        <div class="ng-row">
-          <input type="text" placeholder="理由カテゴリ（例：価格）" class="ng-cat" />
-          <input type="number" placeholder="件数" class="ng-cnt" min="0" />
-        </div>
-      </div>
-      <button id="addNg" type="button">＋ 理由を追加</button>
+      <p class="hint">該当するカテゴリに件数を入力してください（0または空欄は集計対象外）</p>
+      <table id="ngTable">
+        <thead>
+          <tr>
+            <th>NG理由カテゴリ</th>
+            <th>件数</th>
+          </tr>
+        </thead>
+        <tbody>
+          <!-- JSで生成 -->
+        </tbody>
+      </table>
     </section>
 
     <section class="card">
