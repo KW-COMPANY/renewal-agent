@@ -79,3 +79,9 @@ button.primary:hover { background: #2c5282; }
   border-left: 4px solid #2b6cb0;
 }
 footer { text-align: center; padding: 20px; color: #888; }
+/* File: style.css に追記 */
+.unit {
+  font-size: 12px;
+  color: #666;
+  margin-left: 4px;
+}
