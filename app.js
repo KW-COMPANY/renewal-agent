@@ -16,18 +16,21 @@ function getCurrentMetric() {
 function metricLabel(m) { return m === "gross_profit" ? "粗利" : "売上"; }
 
 // ========== 入力UI ==========
-function buildLabelInputHTML(period, currentValue = "") {
+function buildLabelInputHTML(period, currentValue = "", readonly = false) {
   let yearPart = "", monthPart = "";
   if (currentValue) {
     const m = String(currentValue).match(/(\d{4})[-/年]?(\d{1,2})?/);
     if (m) { yearPart = m[1]; monthPart = m[2] ? m[2].padStart(2, "0") : ""; }
   }
+  const ro = readonly ? "readonly" : "";
+  const cls = readonly ? "s-label is-locked" : "s-label";
+
   if (period === "monthly") {
     const val = yearPart && monthPart ? `${yearPart}-${monthPart}` : "";
-    return `<input type="month" class="s-label" value="${val}" />`;
+    return `<input type="month" class="${cls}" value="${val}" ${ro} />`;
   } else {
     const val = yearPart || "";
-    return `<input type="number" class="s-label" min="2000" max="2100" step="1" placeholder="2026" value="${val}" />`;
+    return `<input type="number" class="${cls}" min="2000" max="2100" step="1" placeholder="2026" value="${val}" ${ro} />`;
   }
 }
 
