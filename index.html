@@ -20,23 +20,34 @@
       <label><input type="radio" name="period" value="yearly" /> 年次</label>
     </section>
 
-    <section class="card">
-      <h2>2. サービス別 更新数値（単位：万円）</h2>
-      <p class="hint">複数期間ぶん入力すると推移分析が可能になります。金額は <strong>1万円刻み</strong> で入力してください。</p>
-      <table id="salesTable">
-        <thead>
-  <tr>
-    <th>識別記号</th>
-    <th class="label-header">該当月/年</th>
-    <th>更新母数(売上)</th>
-    <th>更新実績（売上）</th>
-    <th>削除</th>
-  </tr>
-</thead>
-        <tbody></tbody>
-      </table>
-      <button id="addRow" type="button">＋ 行を追加</button>
-    </section>
+<section class="card">
+  <h2>2. サービス別 更新数値（単位：万円）</h2>
+
+  <div class="metric-toggle">
+    <strong>分析対象：</strong>
+    <label><input type="radio" name="metric" value="sales" checked /> 売上</label>
+    <label><input type="radio" name="metric" value="gross_profit" /> 粗利</label>
+  </div>
+
+  <p class="hint">
+    複数期間ぶん入力すると推移分析が可能になります。金額は <strong>1万円刻み</strong> で入力してください。<br />
+    ※「売上」を選ぶとトップライン（受注規模）視点、「粗利」を選ぶと収益性視点の分析になります。
+  </p>
+
+  <table id="salesTable">
+    <thead>
+      <tr>
+        <th>識別記号</th>
+        <th class="label-header">>該当月/年</th>
+        <th class="base-header">更新母数</th>
+        <th class="actual-header">更新実績</th>
+        <th>削除</th>
+      </tr>
+    </thead>
+    <tbody></tbody>
+  </table>
+  <button id="addRow" type="button">＋ 行を追加</button>
+</section>
 
     <section class="card">
       <h2>3. 更新NG理由（カテゴリ別件数）</h2>
