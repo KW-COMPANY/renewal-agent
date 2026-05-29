@@ -89,17 +89,37 @@ function addSalesRow() {
   const actualPh = metric === "gross_profit" ? "25" : "85";
   const idPh = nextIdPlaceholder();
 
+  // 既に行があるかどうかで挙動を分岐
+  const isFirstRow = tbody.children.length === 0;
+  const firstValue = isFirstRow ? "" : getFirstRowLabelValue();
+  const labelHTML = buildLabelInputHTML(period, firstValue, !isFirstRow);
+
   const tr = document.createElement("tr");
   tr.innerHTML = `
     <td><input type="text" class="s-id" placeholder="${idPh}" /></td>
-    <td class="label-cell">${buildLabelInputHTML(period)}</td>
+    <td class="label-cell">${labelHTML}</td>
     <td><input type="number" class="s-base" min="0" step="1" placeholder="${basePh}" /> <span class="unit">万円</span></td>
     <td><input type="number" class="s-actual" min="0" step="1" placeholder="${actualPh}" /> <span class="unit">万円</span></td>
     <td class="center"><span class="row-rate">―</span></td>
     <td><button type="button" class="del">×</button></td>
   `;
-  tr.querySelector(".del").addEventListener("click", () => { tr.remove(); refreshPreview(); });
+
+  tr.querySelector(".del").addEventListener("click", () => {
+    tr.remove();
+    // 1行目が削除されたら、新たな1行目のロックを解除する
+    relockRows();
+    refreshPreview();
+  });
+
+  // 入力ハンドラ
   tr.querySelectorAll("input").forEach((inp) => inp.addEventListener("input", refreshPreview));
+
+  // 1行目のラベル変更時は2行目以降に同期
+  if (isFirstRow) {
+    const labelInput = tr.querySelector(".s-label");
+    if (labelInput) labelInput.addEventListener("input", syncLabelsToFirstRow);
+  }
+
   tbody.appendChild(tr);
   refreshPreview();
 }
