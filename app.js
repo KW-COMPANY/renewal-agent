@@ -37,9 +37,11 @@ function addSalesRow() {
   const metric = getCurrentMetric();
   const basePh = metric === "gross_profit" ? "30" : "100";
   const actualPh = metric === "gross_profit" ? "25" : "85";
+  const idPh = nextIdPlaceholder();
+
   const tr = document.createElement("tr");
   tr.innerHTML = `
-    <td><input type="text" class="s-id" placeholder="A" /></td>
+    <td><input type="text" class="s-id" placeholder="${idPh}" /></td>
     <td class="label-cell">${buildLabelInputHTML(period)}</td>
     <td><input type="number" class="s-base" min="0" step="1" placeholder="${basePh}" /> <span class="unit">万円</span></td>
     <td><input type="number" class="s-actual" min="0" step="1" placeholder="${actualPh}" /> <span class="unit">万円</span></td>
