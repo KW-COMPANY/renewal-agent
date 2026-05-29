@@ -31,6 +31,33 @@ function buildLabelInputHTML(period, currentValue = "") {
   }
 }
 
+function nextIdPlaceholder() {
+  // 既存行で使われている記号（入力値 or プレースホルダ）を収集
+  const used = new Set();
+  document.querySelectorAll("#salesTable tbody tr .s-id").forEach((inp) => {
+    const v = (inp.value || inp.placeholder || "").trim().toUpperCase();
+    if (v) used.add(v);
+  });
+
+  // A, B, C, ... Z, AA, AB, ... の順で未使用を探す
+  const toLabel = (n) => {
+    // n=0→A, 25→Z, 26→AA ...
+    let s = "";
+    n = n | 0;
+    do {
+      s = String.fromCharCode(65 + (n % 26)) + s;
+      n = Math.floor(n / 26) - 1;
+    } while (n >= 0);
+    return s;
+  };
+
+  for (let i = 0; i < 1000; i++) {
+    const candidate = toLabel(i);
+    if (!used.has(candidate)) return candidate;
+  }
+  return "X"; // フォールバック
+}
+
 function addSalesRow() {
   const tbody = document.querySelector("#salesTable tbody");
   const period = getCurrentPeriod();
