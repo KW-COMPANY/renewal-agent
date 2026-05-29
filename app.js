@@ -124,6 +124,27 @@ function addSalesRow() {
   refreshPreview();
 }
 
+// 1行目が編集可能、2行目以降がロックされている状態に再構成する
+function relockRows() {
+  const period = getCurrentPeriod();
+  const trs = document.querySelectorAll("#salesTable tbody tr");
+  if (trs.length === 0) return;
+
+  // 1行目：既存値を保持しつつ編集可能に
+  const firstCell = trs[0].querySelector(".label-cell");
+  const firstOld = firstCell.querySelector(".s-label");
+  const firstValue = firstOld ? firstOld.value : "";
+  firstCell.innerHTML = buildLabelInputHTML(period, firstValue, false);
+  const newFirstInput = firstCell.querySelector(".s-label");
+  if (newFirstInput) {
+    newFirstInput.addEventListener("input", () => { syncLabelsToFirstRow(); refreshPreview(); });
+    newFirstInput.addEventListener("input", refreshPreview);
+  }
+
+  // 2行目以降：1行目に同期してロック
+  syncLabelsToFirstRow();
+}
+
 function refreshAllLabelInputs() {
   const period = getCurrentPeriod();
   document.querySelectorAll("#salesTable tbody tr").forEach((tr) => {
