@@ -1,0 +1,71 @@
+<!-- File: index.html -->
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>更新率分析AIエージェント</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <header>
+    <h1>📊 更新率分析AIエージェント</h1>
+    <p class="sub">サービスごとの更新数値とNG理由から、課題と打ち手を自動提案します</p>
+    <p class="notice">※ 企業名・個人情報・実サービス名は入力しないでください（記号・連番で識別）</p>
+  </header>
+
+  <main>
+    <section class="card">
+      <h2>1. 期間タイプを選択</h2>
+      <label><input type="radio" name="period" value="monthly" checked /> 月次</label>
+      <label><input type="radio" name="period" value="yearly" /> 年次</label>
+    </section>
+
+    <section class="card">
+      <h2>2. サービス別 更新数値</h2>
+      <p class="hint">複数期間ぶん入力すると推移分析が可能になります</p>
+      <table id="salesTable">
+        <thead>
+          <tr>
+            <th>識別記号</th>
+            <th>期間ラベル</th>
+            <th>更新母数売上</th>
+            <th>実際の更新売上</th>
+            <th>削除</th>
+          </tr>
+        </thead>
+        <tbody></tbody>
+      </table>
+      <button id="addRow" type="button">＋ 行を追加</button>
+    </section>
+
+    <section class="card">
+      <h2>3. 更新NG理由（カテゴリ別件数）</h2>
+      <div id="ngReasons">
+        <div class="ng-row">
+          <input type="text" placeholder="理由カテゴリ（例：価格）" class="ng-cat" />
+          <input type="number" placeholder="件数" class="ng-cnt" min="0" />
+        </div>
+      </div>
+      <button id="addNg" type="button">＋ 理由を追加</button>
+    </section>
+
+    <section class="card">
+      <h2>4. 分析実行</h2>
+      <button id="analyzeBtn" type="button" class="primary">🤖 AIエージェントに分析させる</button>
+      <p id="status" class="status"></p>
+    </section>
+
+    <section class="card" id="resultSection" hidden>
+      <h2>5. 分析レポート</h2>
+      <div id="result"></div>
+    </section>
+  </main>
+
+  <footer>
+    <small>Powered by Cloudflare Workers + Gemini API</small>
+  </footer>
+
+  <script src="app.js"></script>
+</body>
+</html>
