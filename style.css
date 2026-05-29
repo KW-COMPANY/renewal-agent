@@ -168,3 +168,56 @@ input[type="month"].s-label {
   outline: none;
   box-shadow: none;
 }
+.id-wrap {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+.id-wrap .s-id {
+  flex: 1;
+}
+.required-mark {
+  color: #e53e3e;
+  font-size: 12px;
+  cursor: help;
+}
+.id-wrap.has-error .required-mark {
+  animation: pulse 1.2s infinite;
+}
+@keyframes pulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.3; }
+}
+
+/* エラー時の入力欄 */
+input.s-id.error {
+  border-color: #e53e3e !important;
+  background-color: #fff5f5;
+  box-shadow: 0 0 0 2px rgba(229, 62, 62, 0.15);
+}
+
+/* 吹き出し */
+.id-wrap .tooltip {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  margin-top: 6px;
+  background: #e53e3e;
+  color: #fff;
+  font-size: 12px;
+  padding: 4px 8px;
+  border-radius: 4px;
+  white-space: nowrap;
+  z-index: 10;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.15);
+}
+/* 吹き出しの三角 */
+.id-wrap .tooltip::before {
+  content: "";
+  position: absolute;
+  bottom: 100%;
+  left: 12px;
+  border: 5px solid transparent;
+  border-bottom-color: #e53e3e;
+}
