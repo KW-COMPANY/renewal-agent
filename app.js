@@ -64,7 +64,7 @@ function refreshAllLabelInputs() {
     if (newInput) newInput.addEventListener("input", refreshPreview);
   });
   const labelHeader = document.querySelector("#salesTable thead th.label-header");
-  if (labelHeader) labelHeader.textContent = period === "monthly" ? "期間ラベル（年月）" : "期間ラベル（年）";
+  if (labelHeader) labelHeader.textContent = period === "monthly" ? "該当月" : "該当年";
   refreshPreview();
 }
 
