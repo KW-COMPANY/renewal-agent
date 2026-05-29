@@ -107,3 +107,53 @@ input[type="month"].s-label {
 .metric-toggle label {
   margin-right: 16px;
 }
+/* File: style.css 末尾に追記 */
+.tabs {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+  border-bottom: 2px solid #e2e8f0;
+  margin-bottom: 12px;
+}
+.tab {
+  background: transparent;
+  border: none;
+  border-bottom: 3px solid transparent;
+  padding: 8px 14px;
+  font-size: 14px;
+  color: #555;
+  cursor: pointer;
+  border-radius: 0;
+}
+.tab.active {
+  color: #2b6cb0;
+  border-bottom-color: #2b6cb0;
+  font-weight: bold;
+}
+.view { min-height: 60px; }
+.metric-cards {
+  display: flex;
+  gap: 12px;
+  flex-wrap: wrap;
+  margin-bottom: 12px;
+}
+.metric-card {
+  flex: 1 1 160px;
+  background: #f7fafc;
+  border-left: 4px solid #2b6cb0;
+  padding: 10px 14px;
+  border-radius: 4px;
+}
+.metric-card .label { font-size: 12px; color: #666; }
+.metric-card .value { font-size: 22px; font-weight: bold; color: #2b6cb0; }
+.metric-card .sub { font-size: 11px; color: #888; }
+.preview-table { width: 100%; border-collapse: collapse; font-size: 13px; }
+.preview-table th, .preview-table td {
+  border: 1px solid #e2e8f0; padding: 6px 8px; text-align: right;
+}
+.preview-table th { background: #edf2f7; text-align: center; }
+.preview-table td.center, .preview-table th.center { text-align: center; }
+.delta-up { color: #2f855a; font-weight: bold; }
+.delta-down { color: #c53030; font-weight: bold; }
+.delta-flat { color: #888; }
+.empty { color: #999; font-style: italic; padding: 12px; }
