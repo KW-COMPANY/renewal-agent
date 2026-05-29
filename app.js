@@ -89,8 +89,8 @@ function refreshMetricLabels() {
   // ヘッダ更新
   const baseHeader = document.querySelector("#salesTable thead th.base-header");
   const actualHeader = document.querySelector("#salesTable thead th.actual-header");
-  if (baseHeader) baseHeader.textContent = `更新母数${word}（万円）`;
-  if (actualHeader) actualHeader.textContent = `実際の更新${word}（万円）`;
+  if (baseHeader) baseHeader.textContent = `更新母数${word}`;
+  if (actualHeader) actualHeader.textContent = `実際の更新${word}`;
 
   // セクション見出し更新
   const h2 = document.querySelector('section.card h2');
