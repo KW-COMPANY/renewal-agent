@@ -1,7 +1,14 @@
-// File: app.js
+const WORKER_ENDPOINT = "https://renewal-agent.gmo-k-watanabe.workers.dev/analyze";
 
-// ★ ここをご自身のWorkers URLに書き換えてください
-const WORKER_ENDPOINT = "https://your-worker-name.your-subdomain.workers.dev/analyze";
+// 固定NG理由カテゴリ
+const NG_CATEGORIES = [
+  "効果無し",
+  "予算NG",
+  "サポート対応不満",
+  "倒産・不通",
+  "クレーム",
+  "その他"
+];
 
 // --- 行追加：売上テーブル ---
 function addSalesRow() {
@@ -10,59 +17,68 @@ function addSalesRow() {
   tr.innerHTML = `
     <td><input type="text" class="s-id" placeholder="A" /></td>
     <td><input type="text" class="s-label" placeholder="2026-01" /></td>
-    <td><input type="number" class="s-base" min="0" placeholder="1000000" /></td>
-    <td><input type="number" class="s-actual" min="0" placeholder="850000" /></td>
+    <td><input type="number" class="s-base" min="0" step="1" placeholder="100" /> <span class="unit">万円</span></td>
+    <td><input type="number" class="s-actual" min="0" step="1" placeholder="85" /> <span class="unit">万円</span></td>
     <td><button type="button" class="del">×</button></td>
   `;
   tr.querySelector(".del").addEventListener("click", () => tr.remove());
   tbody.appendChild(tr);
 }
 
-// --- 行追加：NG理由 ---
-function addNgRow() {
-  const wrap = document.getElementById("ngReasons");
-  const div = document.createElement("div");
-  div.className = "ng-row";
-  div.innerHTML = `
-    <input type="text" placeholder="理由カテゴリ" class="ng-cat" />
-    <input type="number" placeholder="件数" class="ng-cnt" min="0" />
-    <button type="button" class="del">×</button>
-  `;
-  div.querySelector(".del").addEventListener("click", () => div.remove());
-  wrap.appendChild(div);
+// --- NG理由テーブルの初期化（固定カテゴリ） ---
+function initNgTable() {
+  const tbody = document.querySelector("#ngTable tbody");
+  tbody.innerHTML = "";
+  NG_CATEGORIES.forEach((cat) => {
+    const tr = document.createElement("tr");
+    tr.innerHTML = `
+      <td>${cat}</td>
+      <td>
+        <input type="number" class="ng-cnt" data-category="${cat}" min="0" step="1" placeholder="0" />
+        <span class="unit">件</span>
+      </td>
+    `;
+    tbody.appendChild(tr);
+  });
 }
 
 // --- 入力データの収集 ---
 function collectData() {
   const period = document.querySelector('input[name="period"]:checked').value;
 
+  // 売上データ（単位：万円のまま送信）
   const sales = [];
   document.querySelectorAll("#salesTable tbody tr").forEach((tr) => {
     const id = tr.querySelector(".s-id").value.trim();
     const label = tr.querySelector(".s-label").value.trim();
-    const base = Number(tr.querySelector(".s-base").value);
-    const actual = Number(tr.querySelector(".s-actual").value);
+    const base = Math.floor(Number(tr.querySelector(".s-base").value));   // 万円
+    const actual = Math.floor(Number(tr.querySelector(".s-actual").value)); // 万円
     if (id && label && base > 0) {
       sales.push({
-        id, label, base, actual,
+        id,
+        label,
+        base,           // 万円
+        actual,         // 万円
+        unit: "万円",
         rate: Number(((actual / base) * 100).toFixed(2))
       });
     }
   });
 
+  // NG理由（固定カテゴリのうち件数 > 0 のみ）
   const ngReasons = [];
-  document.querySelectorAll(".ng-row").forEach((row) => {
-    const cat = row.querySelector(".ng-cat").value.trim();
-    const cnt = Number(row.querySelector(".ng-cnt").value);
+  document.querySelectorAll(".ng-cnt").forEach((input) => {
+    const cnt = Math.floor(Number(input.value));
+    const cat = input.dataset.category;
     if (cat && cnt > 0) ngReasons.push({ category: cat, count: cnt });
   });
 
-  return { period, sales, ngReasons };
+  return { period, sales, ngReasons, amountUnit: "万円" };
 }
 
 // --- センシティブ情報の簡易チェック ---
 function hasSensitive(data) {
-  const pattern = /(株式会社|有限会社|[A-Za-z]{3,}\s?(Inc|Ltd|Corp))/i;
+  const pattern = /(株式会社|有限会社|合同会社|[A-Za-z]{3,}\s?(Inc|Ltd|Corp))/i;
   const all = JSON.stringify(data);
   return pattern.test(all);
 }
@@ -74,8 +90,13 @@ async function runAnalyze() {
   const resultBox = document.getElementById("result");
 
   const data = collectData();
+
   if (data.sales.length === 0) {
-    status.textContent = "⚠ 更新数値を最低1行入力してください。";
+    status.textContent = "⚠ 更新数値を最低1行入力してください（更新母数売上は1以上）。";
+    return;
+  }
+  if (data.ngReasons.length === 0) {
+    status.textContent = "⚠ NG理由の件数を1つ以上入力してください。";
     return;
   }
   if (hasSensitive(data)) {
@@ -105,6 +126,6 @@ async function runAnalyze() {
 
 // --- 初期化 ---
 document.getElementById("addRow").addEventListener("click", addSalesRow);
-document.getElementById("addNg").addEventListener("click", addNgRow);
 document.getElementById("analyzeBtn").addEventListener("click", runAnalyze);
-addSalesRow(); // 初期1行
+addSalesRow();   // 売上テーブル初期1行
+initNgTable();   // NG理由テーブル固定生成
