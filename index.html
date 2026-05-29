@@ -65,16 +65,33 @@
       </table>
     </section>
 
-    <section class="card">
-      <h2>4. 分析実行</h2>
-      <button id="analyzeBtn" type="button" class="primary">🤖 AIエージェントに分析させる</button>
-      <p id="status" class="status"></p>
-    </section>
+<section class="card">
+  <h2>4. 集計プレビュー（自動計算）</h2>
+  <p class="hint">入力するとリアルタイムに更新率が計算されます。下のタブで表示を切り替えられます。</p>
 
-    <section class="card" id="resultSection" hidden>
-      <h2>5. 分析レポート</h2>
-      <div id="result"></div>
-    </section>
+  <div class="tabs">
+    <button type="button" class="tab active" data-view="summary">📊 サマリー</button>
+    <button type="button" class="tab" data-view="trend">📈 推移マトリクス</button>
+    <button type="button" class="tab" data-view="yoy">🔁 前年同月比</button>
+    <button type="button" class="tab" data-view="ranking">🏆 更新率比較</button>
+  </div>
+
+  <div id="viewSummary" class="view active"></div>
+  <div id="viewTrend" class="view" hidden></div>
+  <div id="viewYoy" class="view" hidden></div>
+  <div id="viewRanking" class="view" hidden></div>
+</section>
+<section class="card">
+  
+  <h2>5. 分析実行</h2>
+  <button id="analyzeBtn" type="button" class="primary">🤖 AIエージェントに分析させる</button>
+  <p id="status" class="status"></p>
+</section>
+
+<section class="card" id="resultSection" hidden>
+  <h2>6. 分析レポート</h2>
+  <div id="result"></div>
+</section>
   </main>
 
   <footer>
