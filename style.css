@@ -157,3 +157,14 @@ input[type="month"].s-label {
 .delta-down { color: #c53030; font-weight: bold; }
 .delta-flat { color: #888; }
 .empty { color: #999; font-style: italic; padding: 12px; }
+/* File: style.css 末尾に追記 */
+.s-label.is-locked {
+  background-color: #f0f4f8;
+  color: #555;
+  cursor: not-allowed;
+  border-style: dashed;
+}
+.s-label.is-locked:focus {
+  outline: none;
+  box-shadow: none;
+}
