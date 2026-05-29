@@ -166,7 +166,7 @@ function refreshAllLabelInputs() {
 
   const labelHeader = document.querySelector("#salesTable thead th.label-header");
   if (labelHeader) {
-    labelHeader.textContent = period === "monthly" ? "期間ラベル（年月）※1行目で全行統一" : "期間ラベル（年）※1行目で全行統一";
+    labelHeader.textContent = period === "monthly" ? "該当月" : "該当年";
   }
 
   // 期間タイプ切替後も2行目以降を1行目に同期
