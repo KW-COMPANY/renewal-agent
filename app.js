@@ -584,6 +584,14 @@ async function runAnalyze() {
   const resultSection = document.getElementById("resultSection");
   const resultBox = document.getElementById("result");
 
+  const firstEmpty = validateAllIdFields();
+  if (firstEmpty) {
+    status.textContent = "⚠ 識別記号が未入力の行があります。赤枠の項目を入力してください。";
+    firstEmpty.focus();
+    firstEmpty.scrollIntoView({ behavior: "smooth", block: "center" });
+    return;
+  }
+
   const { period, rows } = collectRows();
   const agg = buildAggregation(period, rows);
   const metricType = getCurrentMetric();
