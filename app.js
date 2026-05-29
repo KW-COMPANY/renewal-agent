@@ -89,14 +89,19 @@ function addSalesRow() {
   const actualPh = metric === "gross_profit" ? "25" : "85";
   const idPh = nextIdPlaceholder();
 
-  // 既に行があるかどうかで挙動を分岐
   const isFirstRow = tbody.children.length === 0;
   const firstValue = isFirstRow ? "" : getFirstRowLabelValue();
   const labelHTML = buildLabelInputHTML(period, firstValue, !isFirstRow);
 
   const tr = document.createElement("tr");
   tr.innerHTML = `
-    <td><input type="text" class="s-id" placeholder="${idPh}" /></td>
+    <td>
+      <div class="id-wrap">
+        <input type="text" class="s-id" placeholder="${idPh}" />
+        <span class="required-mark" title="必須入力">★</span>
+        <span class="tooltip" hidden>必須入力です</span>
+      </div>
+    </td>
     <td class="label-cell">${labelHTML}</td>
     <td><input type="number" class="s-base" min="0" step="1" placeholder="${basePh}" /> <span class="unit">万円</span></td>
     <td><input type="number" class="s-actual" min="0" step="1" placeholder="${actualPh}" /> <span class="unit">万円</span></td>
@@ -106,15 +111,19 @@ function addSalesRow() {
 
   tr.querySelector(".del").addEventListener("click", () => {
     tr.remove();
-    // 1行目が削除されたら、新たな1行目のロックを解除する
     relockRows();
     refreshPreview();
   });
 
-  // 入力ハンドラ
   tr.querySelectorAll("input").forEach((inp) => inp.addEventListener("input", refreshPreview));
 
-  // 1行目のラベル変更時は2行目以降に同期
+  // 識別記号のバリデーション
+  const idInput = tr.querySelector(".s-id");
+  idInput.addEventListener("blur", () => validateIdField(idInput));
+  idInput.addEventListener("input", () => {
+    if (idInput.value.trim()) clearIdError(idInput);
+  });
+
   if (isFirstRow) {
     const labelInput = tr.querySelector(".s-label");
     if (labelInput) labelInput.addEventListener("input", syncLabelsToFirstRow);
@@ -122,6 +131,46 @@ function addSalesRow() {
 
   tbody.appendChild(tr);
   refreshPreview();
+}
+
+function validateIdField(input) {
+  const wrap = input.closest(".id-wrap");
+  if (!wrap) return true;
+  const tooltip = wrap.querySelector(".tooltip");
+  const isEmpty = !input.value.trim();
+
+  if (isEmpty) {
+    wrap.classList.add("has-error");
+    input.classList.add("error");
+    if (tooltip) {
+      tooltip.hidden = false;
+      tooltip.textContent = "必須入力です";
+    }
+    return false;
+  } else {
+    clearIdError(input);
+    return true;
+  }
+}
+
+function clearIdError(input) {
+  const wrap = input.closest(".id-wrap");
+  if (!wrap) return;
+  const tooltip = wrap.querySelector(".tooltip");
+  wrap.classList.remove("has-error");
+  input.classList.remove("error");
+  if (tooltip) tooltip.hidden = true;
+}
+
+// 全行の識別記号を一括バリデート（分析ボタン押下時用）
+// 戻り値: 最初に見つかった空欄input or null
+function validateAllIdFields() {
+  let firstEmpty = null;
+  document.querySelectorAll("#salesTable tbody tr .s-id").forEach((inp) => {
+    const ok = validateIdField(inp);
+    if (!ok && !firstEmpty) firstEmpty = inp;
+  });
+  return firstEmpty;
 }
 
 // 1行目が編集可能、2行目以降がロックされている状態に再構成する
