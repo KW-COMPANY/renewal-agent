@@ -23,7 +23,7 @@ function metricLabel(metric) {
   return metric === "gross_profit" ? "粗利" : "売上";
 }
 
-// --- 期間ラベル入力欄HTML生成 ---
+// --- 期間入力欄HTML生成 ---
 function buildLabelInputHTML(period, currentValue = "") {
   let yearPart = "";
   let monthPart = "";
@@ -77,7 +77,7 @@ function refreshAllLabelInputs() {
   });
   const labelHeader = document.querySelector("#salesTable thead th.label-header");
   if (labelHeader) {
-    labelHeader.textContent = period === "monthly" ? "期間ラベル（年月）" : "期間ラベル（年）";
+    labelHeader.textContent = period === "monthly" ? "該当月" : "該当年";
   }
 }
 
