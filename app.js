@@ -34,6 +34,26 @@ function buildLabelInputHTML(period, currentValue = "", readonly = false) {
   }
 }
 
+// 1行目の期間ラベル値を取得（type="month"はyyyy-MM、年次は4桁）
+function getFirstRowLabelValue() {
+  const first = document.querySelector("#salesTable tbody tr:first-child .s-label");
+  return first ? first.value : "";
+}
+
+// 2行目以降のラベル欄を1行目に同期させる
+function syncLabelsToFirstRow() {
+  const period = getCurrentPeriod();
+  const firstValue = getFirstRowLabelValue();
+  const trs = document.querySelectorAll("#salesTable tbody tr");
+  trs.forEach((tr, idx) => {
+    if (idx === 0) return; // 1行目はスキップ
+    const cell = tr.querySelector(".label-cell");
+    if (!cell) return;
+    cell.innerHTML = buildLabelInputHTML(period, firstValue, true);
+  });
+  refreshPreview();
+}
+
 function nextIdPlaceholder() {
   // 既存行で使われている記号（入力値 or プレースホルダ）を収集
   const used = new Set();
