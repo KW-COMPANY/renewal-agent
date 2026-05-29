@@ -97,3 +97,13 @@ footer { text-align: center; padding: 20px; color: #888; }
 input[type="month"].s-label {
   padding: 5px 8px;
 }
+/* File: style.css に追記（任意） */
+.metric-toggle {
+  background: #edf2f7;
+  padding: 10px 14px;
+  border-radius: 6px;
+  margin-bottom: 12px;
+}
+.metric-toggle label {
+  margin-right: 16px;
+}
