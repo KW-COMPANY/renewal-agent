@@ -147,18 +147,30 @@ function relockRows() {
 
 function refreshAllLabelInputs() {
   const period = getCurrentPeriod();
-  document.querySelectorAll("#salesTable tbody tr").forEach((tr) => {
+  const trs = document.querySelectorAll("#salesTable tbody tr");
+
+  trs.forEach((tr, idx) => {
     const cell = tr.querySelector(".label-cell");
     if (!cell) return;
     const oldInput = cell.querySelector(".s-label");
     const oldValue = oldInput ? oldInput.value : "";
-    cell.innerHTML = buildLabelInputHTML(period, oldValue);
+    const isFirst = idx === 0;
+    cell.innerHTML = buildLabelInputHTML(period, oldValue, !isFirst);
+
     const newInput = cell.querySelector(".s-label");
-    if (newInput) newInput.addEventListener("input", refreshPreview);
+    if (newInput) {
+      newInput.addEventListener("input", refreshPreview);
+      if (isFirst) newInput.addEventListener("input", syncLabelsToFirstRow);
+    }
   });
+
   const labelHeader = document.querySelector("#salesTable thead th.label-header");
-  if (labelHeader) labelHeader.textContent = period === "monthly" ? "該当月" : "該当年";
-  refreshPreview();
+  if (labelHeader) {
+    labelHeader.textContent = period === "monthly" ? "期間ラベル（年月）※1行目で全行統一" : "期間ラベル（年）※1行目で全行統一";
+  }
+
+  // 期間タイプ切替後も2行目以降を1行目に同期
+  syncLabelsToFirstRow();
 }
 
 function refreshMetricLabels() {
