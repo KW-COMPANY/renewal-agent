@@ -1,7 +1,7 @@
 const WORKER_ENDPOINT = "https://renewal-agent.gmo-k-watanabe.workers.dev/analyze";
 
 const NG_CATEGORIES = [
-  "効果無し", "予算NG", "サポート対応不満", "倒産・不通", "クレーム", "その他"
+  "効果無し", "費用NG", "サポート対応不満", "倒産・不通", "ご意見", "その他"
 ];
 
 // ========== 取得ヘルパ ==========
