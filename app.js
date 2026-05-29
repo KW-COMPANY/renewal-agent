@@ -73,8 +73,8 @@ function refreshMetricLabels() {
   const word = metricLabel(metric);
   const baseHeader = document.querySelector("#salesTable thead th.base-header");
   const actualHeader = document.querySelector("#salesTable thead th.actual-header");
-  if (baseHeader) baseHeader.textContent = `更新母数${word}（万円）`;
-  if (actualHeader) actualHeader.textContent = `実際の更新${word}（万円）`;
+  if (baseHeader) baseHeader.textContent = `更新母数${word}`;
+  if (actualHeader) actualHeader.textContent = `実績更新${word}`;
   const basePh = metric === "gross_profit" ? "30" : "100";
   const actualPh = metric === "gross_profit" ? "25" : "85";
   document.querySelectorAll("#salesTable tbody tr").forEach((tr) => {
