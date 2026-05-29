@@ -85,3 +85,9 @@ footer { text-align: center; padding: 20px; color: #888; }
   color: #666;
   margin-left: 4px;
 }
+/* File: style.css に追記（任意） */
+#salesTable td input[type="number"],
+#ngTable td input[type="number"] {
+  width: calc(100% - 50px);
+  display: inline-block;
+}
