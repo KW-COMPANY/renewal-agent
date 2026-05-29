@@ -10,15 +10,21 @@ const NG_CATEGORIES = [
   "その他"
 ];
 
-// --- 現在の期間タイプ取得 ---
+// --- 現在の選択値取得 ---
 function getCurrentPeriod() {
   const el = document.querySelector('input[name="period"]:checked');
   return el ? el.value : "monthly";
 }
+function getCurrentMetric() {
+  const el = document.querySelector('input[name="metric"]:checked');
+  return el ? el.value : "sales";
+}
+function metricLabel(metric) {
+  return metric === "gross_profit" ? "粗利" : "売上";
+}
 
-// --- 期間ラベル入力欄のHTMLを生成 ---
+// --- 期間ラベル入力欄HTML生成 ---
 function buildLabelInputHTML(period, currentValue = "") {
-  // 既存値から年/月を抽出（切替時の値引き継ぎ用）
   let yearPart = "";
   let monthPart = "";
   if (currentValue) {
@@ -28,13 +34,10 @@ function buildLabelInputHTML(period, currentValue = "") {
       monthPart = m[2] ? m[2].padStart(2, "0") : "";
     }
   }
-
   if (period === "monthly") {
-    // type="month" は yyyy-MM 形式
     const val = yearPart && monthPart ? `${yearPart}-${monthPart}` : "";
     return `<input type="month" class="s-label" value="${val}" />`;
   } else {
-    // 年次：4桁の数値入力
     const val = yearPart || "";
     return `<input type="number" class="s-label" min="2000" max="2100" step="1" placeholder="2026" value="${val}" />`;
   }
@@ -44,19 +47,25 @@ function buildLabelInputHTML(period, currentValue = "") {
 function addSalesRow() {
   const tbody = document.querySelector("#salesTable tbody");
   const period = getCurrentPeriod();
+  const metric = getCurrentMetric();
+
+  // 粗利の方が一般的に小さい数値になるためプレースホルダを調整
+  const basePh = metric === "gross_profit" ? "30" : "100";
+  const actualPh = metric === "gross_profit" ? "25" : "85";
+
   const tr = document.createElement("tr");
   tr.innerHTML = `
     <td><input type="text" class="s-id" placeholder="A" /></td>
     <td class="label-cell">${buildLabelInputHTML(period)}</td>
-    <td><input type="number" class="s-base" min="0" step="1" placeholder="100" /> <span class="unit">万円</span></td>
-    <td><input type="number" class="s-actual" min="0" step="1" placeholder="85" /> <span class="unit">万円</span></td>
+    <td><input type="number" class="s-base" min="0" step="1" placeholder="${basePh}" /> <span class="unit">万円</span></td>
+    <td><input type="number" class="s-actual" min="0" step="1" placeholder="${actualPh}" /> <span class="unit">万円</span></td>
     <td><button type="button" class="del">×</button></td>
   `;
   tr.querySelector(".del").addEventListener("click", () => tr.remove());
   tbody.appendChild(tr);
 }
 
-// --- 期間タイプ切替時：全行のラベル欄を作り直す ---
+// --- 期間タイプ切替：全行のラベル欄を作り直す ---
 function refreshAllLabelInputs() {
   const period = getCurrentPeriod();
   document.querySelectorAll("#salesTable tbody tr").forEach((tr) => {
@@ -66,12 +75,36 @@ function refreshAllLabelInputs() {
     const oldValue = oldInput ? oldInput.value : "";
     cell.innerHTML = buildLabelInputHTML(period, oldValue);
   });
-
-  // 表ヘッダの表示も切り替え
   const labelHeader = document.querySelector("#salesTable thead th.label-header");
   if (labelHeader) {
     labelHeader.textContent = period === "monthly" ? "期間ラベル（年月）" : "期間ラベル（年）";
   }
+}
+
+// --- 指標タイプ切替：ヘッダ＆プレースホルダを更新 ---
+function refreshMetricLabels() {
+  const metric = getCurrentMetric();
+  const word = metricLabel(metric);
+
+  // ヘッダ更新
+  const baseHeader = document.querySelector("#salesTable thead th.base-header");
+  const actualHeader = document.querySelector("#salesTable thead th.actual-header");
+  if (baseHeader) baseHeader.textContent = `更新母数${word}（万円）`;
+  if (actualHeader) actualHeader.textContent = `実際の更新${word}（万円）`;
+
+  // セクション見出し更新
+  const h2 = document.querySelector('section.card h2');
+  // ※ セクション2のh2を狙うため、より安全にIDを使う場合はindex.htmlに id="metricSectionTitle" 等を付与してください
+
+  // プレースホルダを既存行にも反映
+  const basePh = metric === "gross_profit" ? "30" : "100";
+  const actualPh = metric === "gross_profit" ? "25" : "85";
+  document.querySelectorAll("#salesTable tbody tr").forEach((tr) => {
+    const b = tr.querySelector(".s-base");
+    const a = tr.querySelector(".s-actual");
+    if (b) b.placeholder = basePh;
+    if (a) a.placeholder = actualPh;
+  });
 }
 
 // --- NG理由テーブル初期化 ---
@@ -91,16 +124,14 @@ function initNgTable() {
   });
 }
 
-// --- ラベル値を正規化（Workerへ送る前） ---
+// --- ラベル正規化 ---
 function normalizeLabel(period, raw) {
   if (!raw) return "";
   if (period === "monthly") {
-    // yyyy-MM → "2026-05月"のような表示用に整形
     const m = String(raw).match(/(\d{4})-(\d{1,2})/);
     if (m) return `${m[1]}-${m[2].padStart(2, "0")}月`;
     return String(raw);
   } else {
-    // 年次：4桁を "2026年" に
     const m = String(raw).match(/(\d{4})/);
     if (m) return `${m[1]}年`;
     return String(raw);
@@ -110,6 +141,7 @@ function normalizeLabel(period, raw) {
 // --- 入力データ収集 ---
 function collectData() {
   const period = getCurrentPeriod();
+  const metricType = getCurrentMetric();
 
   const sales = [];
   document.querySelectorAll("#salesTable tbody tr").forEach((tr) => {
@@ -137,10 +169,17 @@ function collectData() {
     if (cat && cnt > 0) ngReasons.push({ category: cat, count: cnt });
   });
 
-  return { period, sales, ngReasons, amountUnit: "万円" };
+  return {
+    period,
+    metricType,                         // "sales" or "gross_profit"
+    metricLabel: metricLabel(metricType), // "売上" or "粗利"
+    sales,
+    ngReasons,
+    amountUnit: "万円"
+  };
 }
 
-// --- センシティブ情報の簡易チェック ---
+// --- センシティブ情報チェック ---
 function hasSensitive(data) {
   const pattern = /(株式会社|有限会社|合同会社|[A-Za-z]{3,}\s?(Inc|Ltd|Corp))/i;
   return pattern.test(JSON.stringify(data));
@@ -155,7 +194,7 @@ async function runAnalyze() {
   const data = collectData();
 
   if (data.sales.length === 0) {
-    status.textContent = "⚠ 更新数値を最低1行入力してください（識別記号・期間ラベル・更新母数売上が必要）。";
+    status.textContent = `⚠ 更新数値を最低1行入力してください（更新母数${data.metricLabel}は1以上）。`;
     return;
   }
   if (data.ngReasons.length === 0) {
@@ -167,7 +206,7 @@ async function runAnalyze() {
     return;
   }
 
-  status.textContent = "🤖 AIエージェントが多段分析中です…（10〜30秒）";
+  status.textContent = `🤖 AIエージェントが「${data.metricLabel}」視点で多段分析中です…（10〜30秒）`;
   resultSection.hidden = true;
 
   try {
@@ -191,11 +230,14 @@ async function runAnalyze() {
 document.getElementById("addRow").addEventListener("click", addSalesRow);
 document.getElementById("analyzeBtn").addEventListener("click", runAnalyze);
 
-// 期間タイプ切替の監視
 document.querySelectorAll('input[name="period"]').forEach((radio) => {
   radio.addEventListener("change", refreshAllLabelInputs);
+});
+document.querySelectorAll('input[name="metric"]').forEach((radio) => {
+  radio.addEventListener("change", refreshMetricLabels);
 });
 
 addSalesRow();
 initNgTable();
-refreshAllLabelInputs(); // 初期ヘッダ反映
+refreshAllLabelInputs();
+refreshMetricLabels();
