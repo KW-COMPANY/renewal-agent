@@ -1,15 +1,20 @@
+<!-- Output: html -->
+<!-- File: index.html -->
 <!DOCTYPE html>
 <html lang="ja">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>ReNEXT AI</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
   <link rel="stylesheet" href="style.css" />
 </head>
 <body>
   <header>
     <h1>📊 ReNEXT AI</h1>
-    <p class="sub">サービスごとの更新数値やお見合わせｍｐ理由から、課題と対応案を自動提案</p>
+    <p class="sub">サービスごとの更新数値やお見合わせの理由から、課題と対応案を自動提案</p>
     <p class="notice">※ 企業名・個人情報・実サービス名は入力しないでください（記号・連番で識別）</p>
   </header>
 
@@ -20,35 +25,35 @@
       <label><input type="radio" name="period" value="yearly" /> 年次</label>
     </section>
 
-<section class="card">
-  <h2>2. 商品・サービス別 更新データ</h2>
+    <section class="card">
+      <h2>2. 商品・サービス別 更新データ</h2>
 
-  <div class="metric-toggle">
-    <strong>分析対象：</strong>
-    <label><input type="radio" name="metric" value="sales" checked /> 売上</label>
-    <label><input type="radio" name="metric" value="gross_profit" /> 粗利</label>
-  </div>
+      <div class="metric-toggle">
+        <strong>分析対象：</strong>
+        <label><input type="radio" name="metric" value="sales" checked /> 売上</label>
+        <label><input type="radio" name="metric" value="gross_profit" /> 粗利</label>
+      </div>
 
-  <p class="hint">
-    複数期間入力すると推移分析が可能になります。金額は <strong>1万円刻み</strong> で入力してください。<br />
-    ※「売上」を選ぶとトップライン（受注規模）視点、「粗利」を選ぶと収益性視点の分析になります。
-  </p>
+      <p class="hint">
+        複数期間入力すると推移分析が可能になります。金額は <strong>1万円刻み</strong> で入力してください。<br />
+        ※「売上」を選ぶとトップライン（受注規模）視点、「粗利」を選ぶと収益性視点の分析になります。
+      </p>
 
-  <table id="salesTable">
-<thead>
-  <tr>
-    <th>商品/サービスを識別記号で</th>
-    <th class="label-header">該当月/年</th>
-    <th class="base-header">更新母数</th>
-    <th class="actual-header">更新実績</th>
-    <th class="center">更新率</th>
-    <th>削除</th>
-  </tr>
-</thead>
-    <tbody></tbody>
-  </table>
-  <button id="addRow" type="button">＋ 行を追加</button>
-</section>
+      <table id="salesTable">
+        <thead>
+          <tr>
+            <th>商品/サービスを識別記号で</th>
+            <th class="label-header">該当月/年</th>
+            <th class="base-header">更新母数</th>
+            <th class="actual-header">更新実績</th>
+            <th class="center">更新率</th>
+            <th>削除</th>
+          </tr>
+        </thead>
+        <tbody></tbody>
+      </table>
+      <button id="addRow" type="button">＋ 行を追加</button>
+    </section>
 
     <section class="card">
       <h2>3. お見合わせ理由</h2>
@@ -66,33 +71,33 @@
       </table>
     </section>
 
-<section class="card">
-  <h2>4. 集計プレビュー（自動計算）</h2>
-  <p class="hint">入力するとリアルタイムに更新率が計算されます。下のタブで表示を切り替えられます。</p>
+    <section class="card">
+      <h2>4. 集計プレビュー（自動計算）</h2>
+      <p class="hint">入力するとリアルタイムに更新率が計算されます。下のタブで表示を切り替えられます。</p>
 
-  <div class="tabs">
-    <button type="button" class="tab active" data-view="summary">📊 サマリー</button>
-    <button type="button" class="tab" data-view="trend">📈 推移マトリクス</button>
-    <button type="button" class="tab" data-view="yoy">🔁 前年同月比</button>
-    <button type="button" class="tab" data-view="ranking">🏆 更新率比較</button>
-  </div>
+      <div class="tabs">
+        <button type="button" class="tab active" data-view="summary">📊 サマリー</button>
+        <button type="button" class="tab" data-view="trend">📈 推移マトリクス</button>
+        <button type="button" class="tab" data-view="yoy">🔁 前年同月比</button>
+        <button type="button" class="tab" data-view="ranking">🏆 更新率比較</button>
+      </div>
 
-  <div id="viewSummary" class="view active"></div>
-  <div id="viewTrend" class="view" hidden></div>
-  <div id="viewYoy" class="view" hidden></div>
-  <div id="viewRanking" class="view" hidden></div>
-</section>
-<section class="card">
-  
-  <h2>5. 分析実行</h2>
-  <button id="analyzeBtn" type="button" class="primary">🤖 AIエージェントに分析させる</button>
-  <p id="status" class="status"></p>
-</section>
+      <div id="viewSummary" class="view active"></div>
+      <div id="viewTrend" class="view" hidden></div>
+      <div id="viewYoy" class="view" hidden></div>
+      <div id="viewRanking" class="view" hidden></div>
+    </section>
 
-<section class="card" id="resultSection" hidden>
-  <h2>6. 分析レポート</h2>
-  <div id="result"></div>
-</section>
+    <section class="card">
+      <h2>5. 分析実行</h2>
+      <button id="analyzeBtn" type="button" class="primary">🤖 AIエージェントに分析させる</button>
+      <p id="status" class="status"></p>
+    </section>
+
+    <section class="card" id="resultSection" hidden>
+      <h2>6. 分析レポート</h2>
+      <div id="result"></div>
+    </section>
   </main>
 
   <script src="app.js"></script>
