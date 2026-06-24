@@ -1,203 +1,304 @@
-* { box-sizing: border-box; }
-body {
-  font-family: -apple-system, "Segoe UI", "Hiragino Sans", sans-serif;
+/* File: style.css */
+
+/* ===== リセット & ベース ===== */
+* {
+  box-sizing: border-box;
   margin: 0;
-  background: #f4f6fa;
-  color: #222;
-  line-height: 1.6;
+  padding: 0;
 }
+
+body {
+  font-family: "Inter", -apple-system, "Segoe UI", "Hiragino Sans", sans-serif;
+  background: #f0f4f8;
+  color: #1a202c;
+  line-height: 1.65;
+  font-size: 15px;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* ===== ヘッダー ===== */
 header {
-  background: linear-gradient(135deg, #2b6cb0, #4299e1);
+  background: linear-gradient(135deg, #1e4e8c 0%, #2b6cb0 50%, #3182ce 100%);
   color: #fff;
-  padding: 24px 16px;
+  padding: 36px 24px 32px;
   text-align: center;
+  box-shadow: 0 4px 16px rgba(43, 108, 176, 0.25);
+  position: relative;
+  overflow: hidden;
 }
-header h1 { margin: 0 0 8px; }
-.sub { margin: 0; opacity: .9; }
-.notice {
-  margin-top: 10px;
-  font-size: 13px;
-  background: rgba(255,255,255,.15);
-  display: inline-block;
-  padding: 6px 12px;
-  border-radius: 4px;
+
+header::before {
+  content: "";
+  position: absolute;
+  top: -60%;
+  left: -10%;
+  width: 120%;
+  height: 200%;
+  background: radial-gradient(ellipse at 70% 40%, rgba(255,255,255,0.07) 0%, transparent 60%);
+  pointer-events: none;
 }
-main {
-  max-width: 900px;
-  margin: 24px auto;
-  padding: 0 16px;
-}
-.card {
-  background: #fff;
-  border-radius: 8px;
-  padding: 20px;
-  margin-bottom: 16px;
-  box-shadow: 0 1px 3px rgba(0,0,0,.06);
-}
-.card h2 { margin-top: 0; font-size: 18px; color: #2b6cb0; }
-.hint { font-size: 13px; color: #666; }
-table { width: 100%; border-collapse: collapse; margin: 12px 0; }
-th, td { border: 1px solid #e2e8f0; padding: 8px; text-align: left; }
-th { background: #edf2f7; font-size: 13px; }
-input[type="text"], input[type="number"] {
-  width: 100%;
-  padding: 6px 8px;
-  border: 1px solid #cbd5e0;
-  border-radius: 4px;
-  font-size: 14px;
-}
-button {
-  background: #edf2f7;
-  border: 1px solid #cbd5e0;
-  padding: 8px 16px;
-  border-radius: 4px;
-  cursor: pointer;
-  font-size: 14px;
-}
-button:hover { background: #e2e8f0; }
-button.primary {
-  background: #2b6cb0;
-  color: #fff;
-  border-color: #2b6cb0;
-  font-weight: bold;
-  padding: 12px 24px;
-}
-button.primary:hover { background: #2c5282; }
-.ng-row {
-  display: flex;
-  gap: 8px;
+
+header h1 {
+  font-size: 28px;
+  font-weight: 700;
+  letter-spacing: 0.01em;
   margin-bottom: 8px;
 }
-.ng-row input { flex: 1; }
-.status { margin-top: 12px; color: #2b6cb0; font-weight: bold; }
-#result {
-  white-space: pre-wrap;
-  background: #f7fafc;
-  padding: 16px;
-  border-radius: 6px;
-  border-left: 4px solid #2b6cb0;
+
+.sub {
+  font-size: 14px;
+  opacity: 0.88;
+  margin-bottom: 0;
 }
-footer { text-align: center; padding: 20px; color: #888; }
-/* File: style.css に追記 */
+
+.notice {
+  display: inline-block;
+  margin-top: 14px;
+  font-size: 12px;
+  background: rgba(255, 255, 255, 0.15);
+  backdrop-filter: blur(4px);
+  padding: 6px 14px;
+  border-radius: 20px;
+  border: 1px solid rgba(255,255,255,0.2);
+  letter-spacing: 0.01em;
+}
+
+/* ===== メインコンテンツ ===== */
+main {
+  max-width: 920px;
+  margin: 28px auto;
+  padding: 0 16px;
+}
+
+/* ===== カード ===== */
+.card {
+  background: #fff;
+  border-radius: 12px;
+  padding: 24px 24px 20px;
+  margin-bottom: 18px;
+  box-shadow:
+    0 1px 2px rgba(0, 0, 0, 0.04),
+    0 4px 12px rgba(0, 0, 0, 0.06);
+  border: 1px solid rgba(226, 232, 240, 0.8);
+  transition: box-shadow 0.2s ease;
+}
+
+.card:hover {
+  box-shadow:
+    0 2px 4px rgba(0, 0, 0, 0.05),
+    0 8px 20px rgba(0, 0, 0, 0.08);
+}
+
+.card h2 {
+  margin-top: 0;
+  margin-bottom: 14px;
+  font-size: 17px;
+  font-weight: 600;
+  color: #2b6cb0;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding-bottom: 10px;
+  border-bottom: 1px solid #edf2f7;
+}
+
+.hint {
+  font-size: 13px;
+  color: #718096;
+  margin-bottom: 12px;
+  line-height: 1.6;
+}
+
+/* ===== ラジオボタン（セクション1） ===== */
+.card label {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  margin-right: 20px;
+  font-size: 14px;
+  cursor: pointer;
+  color: #2d3748;
+}
+
+.card label input[type="radio"] {
+  accent-color: #2b6cb0;
+  width: 16px;
+  height: 16px;
+}
+
+/* ===== 分析対象トグル ===== */
+.metric-toggle {
+  background: linear-gradient(to right, #edf2f7, #f7fafc);
+  padding: 10px 16px;
+  border-radius: 8px;
+  margin-bottom: 14px;
+  border: 1px solid #e2e8f0;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  flex-wrap: wrap;
+}
+
+.metric-toggle strong {
+  font-size: 13px;
+  color: #4a5568;
+  margin-right: 8px;
+}
+
+.metric-toggle label {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 14px;
+  font-weight: 500;
+  margin-right: 16px;
+  cursor: pointer;
+  padding: 4px 10px;
+  border-radius: 6px;
+  transition: background 0.15s ease;
+}
+
+.metric-toggle label:hover {
+  background: rgba(43, 108, 176, 0.06);
+}
+
+/* ===== テーブル ===== */
+table {
+  width: 100%;
+  border-collapse: collapse;
+  margin: 12px 0;
+  font-size: 14px;
+}
+
+th, td {
+  border: 1px solid #e2e8f0;
+  padding: 9px 10px;
+  text-align: left;
+}
+
+th {
+  background: linear-gradient(to bottom, #f0f4f8, #edf2f7);
+  font-size: 12px;
+  font-weight: 600;
+  color: #4a5568;
+  letter-spacing: 0.03em;
+  text-transform: uppercase;
+}
+
+#salesTable tbody tr,
+#ngTable tbody tr {
+  transition: background 0.12s ease;
+}
+
+#salesTable tbody tr:nth-child(even),
+#ngTable tbody tr:nth-child(even) {
+  background: #f7fafc;
+}
+
+#salesTable tbody tr:hover,
+#ngTable tbody tr:hover {
+  background: #ebf4ff;
+}
+
+/* ===== 入力欄 ===== */
+input[type="text"],
+input[type="number"],
+input[type="month"] {
+  width: 100%;
+  padding: 7px 10px;
+  border: 1.5px solid #cbd5e0;
+  border-radius: 7px;
+  font-size: 14px;
+  font-family: inherit;
+  color: #1a202c;
+  background: #fff;
+  transition: border-color 0.15s ease, box-shadow 0.15s ease;
+  outline: none;
+}
+
+input[type="text"]:focus,
+input[type="number"]:focus,
+input[type="month"]:focus {
+  border-color: #3182ce;
+  box-shadow: 0 0 0 3px rgba(49, 130, 206, 0.15);
+}
+
+input[type="text"]::placeholder,
+input[type="number"]::placeholder {
+  color: #b0bec5;
+}
+
+/* ===== 単位テキスト ===== */
 .unit {
   font-size: 12px;
-  color: #666;
+  color: #718096;
   margin-left: 4px;
+  white-space: nowrap;
 }
-/* File: style.css に追記（任意） */
+
+/* ===== NG件数入力 ===== */
 #salesTable td input[type="number"],
 #ngTable td input[type="number"] {
-  width: calc(100% - 50px);
+  width: calc(100% - 52px);
   display: inline-block;
 }
-/* File: style.css に追記（任意） */
+
+/* ===== 期間ラベル ===== */
 .s-label {
   min-width: 120px;
 }
+
 input[type="month"].s-label {
-  padding: 5px 8px;
+  padding: 6px 10px;
 }
-/* File: style.css に追記（任意） */
-.metric-toggle {
-  background: #edf2f7;
-  padding: 10px 14px;
-  border-radius: 6px;
-  margin-bottom: 12px;
-}
-.metric-toggle label {
-  margin-right: 16px;
-}
-/* File: style.css 末尾に追記 */
-.tabs {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 4px;
-  border-bottom: 2px solid #e2e8f0;
-  margin-bottom: 12px;
-}
-.tab {
-  background: transparent;
-  border: none;
-  border-bottom: 3px solid transparent;
-  padding: 8px 14px;
-  font-size: 14px;
-  color: #555;
-  cursor: pointer;
-  border-radius: 0;
-}
-.tab.active {
-  color: #2b6cb0;
-  border-bottom-color: #2b6cb0;
-  font-weight: bold;
-}
-.view { min-height: 60px; }
-.metric-cards {
-  display: flex;
-  gap: 12px;
-  flex-wrap: wrap;
-  margin-bottom: 12px;
-}
-.metric-card {
-  flex: 1 1 160px;
-  background: #f7fafc;
-  border-left: 4px solid #2b6cb0;
-  padding: 10px 14px;
-  border-radius: 4px;
-}
-.metric-card .label { font-size: 12px; color: #666; }
-.metric-card .value { font-size: 22px; font-weight: bold; color: #2b6cb0; }
-.metric-card .sub { font-size: 11px; color: #888; }
-.preview-table { width: 100%; border-collapse: collapse; font-size: 13px; }
-.preview-table th, .preview-table td {
-  border: 1px solid #e2e8f0; padding: 6px 8px; text-align: right;
-}
-.preview-table th { background: #edf2f7; text-align: center; }
-.preview-table td.center, .preview-table th.center { text-align: center; }
-.delta-up { color: #2f855a; font-weight: bold; }
-.delta-down { color: #c53030; font-weight: bold; }
-.delta-flat { color: #888; }
-.empty { color: #999; font-style: italic; padding: 12px; }
-/* File: style.css 末尾に追記 */
+
 .s-label.is-locked {
   background-color: #f0f4f8;
-  color: #555;
+  color: #718096;
   cursor: not-allowed;
   border-style: dashed;
+  border-color: #cbd5e0;
 }
+
 .s-label.is-locked:focus {
   outline: none;
   box-shadow: none;
 }
+
+/* ===== 識別記号バリデーション ===== */
 .id-wrap {
   position: relative;
   display: flex;
   align-items: center;
   gap: 4px;
 }
+
 .id-wrap .s-id {
   flex: 1;
 }
+
 .required-mark {
   color: #e53e3e;
   font-size: 12px;
   cursor: help;
+  flex-shrink: 0;
 }
+
 .id-wrap.has-error .required-mark {
   animation: pulse 1.2s infinite;
 }
+
 @keyframes pulse {
   0%, 100% { opacity: 1; }
   50% { opacity: 0.3; }
 }
 
-/* エラー時の入力欄 */
 input.s-id.error {
   border-color: #e53e3e !important;
   background-color: #fff5f5;
-  box-shadow: 0 0 0 2px rgba(229, 62, 62, 0.15);
+  box-shadow: 0 0 0 3px rgba(229, 62, 62, 0.12);
 }
 
-/* 吹き出し */
 .id-wrap .tooltip {
   position: absolute;
   top: 100%;
@@ -206,13 +307,13 @@ input.s-id.error {
   background: #e53e3e;
   color: #fff;
   font-size: 12px;
-  padding: 4px 8px;
-  border-radius: 4px;
+  padding: 4px 10px;
+  border-radius: 6px;
   white-space: nowrap;
   z-index: 10;
-  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.15);
+  box-shadow: 0 2px 8px rgba(229, 62, 62, 0.25);
 }
-/* 吹き出しの三角 */
+
 .id-wrap .tooltip::before {
   content: "";
   position: absolute;
@@ -220,4 +321,313 @@ input.s-id.error {
   left: 12px;
   border: 5px solid transparent;
   border-bottom-color: #e53e3e;
+}
+
+/* ===== ボタン ===== */
+button {
+  background: #fff;
+  border: 1.5px solid #cbd5e0;
+  padding: 8px 18px;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 14px;
+  font-family: inherit;
+  font-weight: 500;
+  color: #4a5568;
+  transition: background 0.15s ease, border-color 0.15s ease, box-shadow 0.15s ease, transform 0.1s ease;
+}
+
+button:hover {
+  background: #f0f4f8;
+  border-color: #a0aec0;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.07);
+}
+
+button:active {
+  transform: translateY(1px);
+}
+
+#addRow {
+  margin-top: 4px;
+  color: #2b6cb0;
+  border-color: #bee3f8;
+  background: #ebf8ff;
+}
+
+#addRow:hover {
+  background: #bee3f8;
+  border-color: #90cdf4;
+}
+
+button.del {
+  background: transparent;
+  border: 1.5px solid #fed7d7;
+  color: #e53e3e;
+  padding: 5px 10px;
+  font-size: 13px;
+  border-radius: 6px;
+}
+
+button.del:hover {
+  background: #fff5f5;
+  border-color: #fc8181;
+}
+
+button.primary {
+  background: linear-gradient(135deg, #2b6cb0, #3182ce);
+  color: #fff;
+  border: none;
+  font-weight: 600;
+  padding: 13px 28px;
+  border-radius: 9px;
+  font-size: 15px;
+  box-shadow: 0 4px 14px rgba(43, 108, 176, 0.35);
+  letter-spacing: 0.01em;
+}
+
+button.primary:hover {
+  background: linear-gradient(135deg, #2c5282, #2b6cb0);
+  box-shadow: 0 6px 18px rgba(43, 108, 176, 0.45);
+  transform: translateY(-1px);
+}
+
+button.primary:active {
+  transform: translateY(1px);
+  box-shadow: 0 2px 8px rgba(43, 108, 176, 0.3);
+}
+
+/* ===== タブ ===== */
+.tabs {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 2px;
+  border-bottom: 2px solid #e2e8f0;
+  margin-bottom: 16px;
+}
+
+.tab {
+  background: transparent;
+  border: none;
+  border-bottom: 3px solid transparent;
+  margin-bottom: -2px;
+  padding: 9px 16px;
+  font-size: 13px;
+  font-weight: 500;
+  color: #718096;
+  cursor: pointer;
+  border-radius: 6px 6px 0 0;
+  transition: color 0.15s ease, background 0.15s ease, border-color 0.15s ease;
+}
+
+.tab:hover {
+  color: #2b6cb0;
+  background: rgba(43, 108, 176, 0.05);
+}
+
+.tab.active {
+  color: #2b6cb0;
+  border-bottom-color: #2b6cb0;
+  font-weight: 600;
+  background: rgba(43, 108, 176, 0.04);
+}
+
+/* ===== ビューエリア ===== */
+.view {
+  min-height: 60px;
+}
+
+/* ===== メトリクスカード ===== */
+.metric-cards {
+  display: flex;
+  gap: 14px;
+  flex-wrap: wrap;
+  margin-bottom: 16px;
+}
+
+.metric-card {
+  flex: 1 1 160px;
+  background: linear-gradient(135deg, #f7fafc 0%, #edf2f7 100%);
+  border-left: 4px solid #2b6cb0;
+  padding: 14px 16px;
+  border-radius: 8px;
+  box-shadow: 0 1px 4px rgba(0,0,0,0.05);
+  transition: transform 0.15s ease, box-shadow 0.15s ease;
+}
+
+.metric-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0,0,0,0.09);
+}
+
+.metric-card .label {
+  font-size: 11px;
+  color: #718096;
+  font-weight: 500;
+  letter-spacing: 0.03em;
+  text-transform: uppercase;
+  margin-bottom: 6px;
+}
+
+.metric-card .value {
+  font-size: 26px;
+  font-weight: 700;
+  color: #1e4e8c;
+  line-height: 1.15;
+  letter-spacing: -0.01em;
+}
+
+.metric-card .sub {
+  font-size: 11px;
+  color: #a0aec0;
+  margin-top: 4px;
+}
+
+/* ===== プレビューテーブル ===== */
+.preview-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 13px;
+}
+
+.preview-table th,
+.preview-table td {
+  border: 1px solid #e2e8f0;
+  padding: 8px 10px;
+  text-align: right;
+}
+
+.preview-table th {
+  background: linear-gradient(to bottom, #f0f4f8, #edf2f7);
+  text-align: center;
+  font-size: 12px;
+  font-weight: 600;
+  color: #4a5568;
+  letter-spacing: 0.03em;
+}
+
+.preview-table tbody tr {
+  transition: background 0.12s ease;
+}
+
+.preview-table tbody tr:nth-child(even) {
+  background: #f7fafc;
+}
+
+.preview-table tbody tr:hover {
+  background: #ebf4ff;
+}
+
+.preview-table td.center,
+.preview-table th.center {
+  text-align: center;
+}
+
+/* ===== 差分インジケーター ===== */
+.delta-up {
+  color: #276749;
+  font-weight: 600;
+  background: #f0fff4;
+  padding: 2px 6px;
+  border-radius: 4px;
+  font-size: 12px;
+}
+
+.delta-down {
+  color: #9b2335;
+  font-weight: 600;
+  background: #fff5f5;
+  padding: 2px 6px;
+  border-radius: 4px;
+  font-size: 12px;
+}
+
+.delta-flat {
+  color: #a0aec0;
+  font-size: 12px;
+}
+
+/* ===== 空状態 ===== */
+.empty {
+  color: #a0aec0;
+  font-style: italic;
+  padding: 20px 12px;
+  text-align: center;
+  font-size: 13px;
+}
+
+/* ===== ステータス ===== */
+.status {
+  margin-top: 14px;
+  color: #2b6cb0;
+  font-weight: 600;
+  font-size: 14px;
+  min-height: 22px;
+  padding: 8px 0;
+}
+
+/* ===== 分析レポート ===== */
+#result {
+  white-space: pre-wrap;
+  background: #f7fafc;
+  padding: 20px;
+  border-radius: 10px;
+  border-left: 4px solid #2b6cb0;
+  font-size: 14px;
+  line-height: 1.75;
+  color: #2d3748;
+  box-shadow: inset 0 1px 4px rgba(0,0,0,0.04);
+}
+
+/* ===== フッター ===== */
+footer {
+  text-align: center;
+  padding: 24px;
+  color: #a0aec0;
+  font-size: 13px;
+}
+
+/* ===== レスポンシブ ===== */
+@media (max-width: 600px) {
+  header {
+    padding: 24px 16px 20px;
+  }
+
+  header h1 {
+    font-size: 22px;
+  }
+
+  main {
+    margin: 16px auto;
+    padding: 0 10px;
+  }
+
+  .card {
+    padding: 16px 14px;
+  }
+
+  .metric-cards {
+    flex-direction: column;
+  }
+
+  .tabs {
+    gap: 0;
+  }
+
+  .tab {
+    padding: 8px 10px;
+    font-size: 12px;
+  }
+
+  table {
+    font-size: 12px;
+  }
+
+  th, td {
+    padding: 7px 6px;
+  }
+
+  button.primary {
+    width: 100%;
+    text-align: center;
+  }
 }
