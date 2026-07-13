@@ -1,4 +1,3 @@
-// File: app.js
 const WORKER_ENDPOINT = "https://renewal-agent.gmo-k-watanabe.workers.dev/analyze";
 
 const NG_CATEGORIES = [
