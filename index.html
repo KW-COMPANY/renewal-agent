@@ -1,3 +1,5 @@
+<!-- Output: html -->
+<!-- File: index.html -->
 <!DOCTYPE html>
 <html lang="ja">
 <head>
@@ -84,16 +86,29 @@
       <div id="viewTrend" class="view" hidden></div>
       <div id="viewYoy" class="view" hidden></div>
       <div id="viewRanking" class="view" hidden></div>
+
+      <div class="preview-actions">
+        <button id="downloadCsv" type="button">⬇ 集計をCSVで保存</button>
+      </div>
     </section>
 
     <section class="card">
       <h2>5. 分析実行</h2>
       <button id="analyzeBtn" type="button" class="primary">🤖 AIエージェントに分析させる</button>
       <p id="status" class="status"></p>
+      <div id="progressSteps" class="progress-steps" hidden>
+        <span class="pstep" data-step="1">① 数値集計</span>
+        <span class="pstep" data-step="2">② ナレッジ参照</span>
+        <span class="pstep" data-step="3">③ 一次要約</span>
+        <span class="pstep" data-step="4">④ 統合分析</span>
+      </div>
     </section>
 
     <section class="card" id="resultSection" hidden>
       <h2>6. 分析レポート</h2>
+      <div class="result-toolbar">
+        <button id="copyReport" type="button">📋 レポートをコピー</button>
+      </div>
       <div id="result"></div>
     </section>
   </main>
