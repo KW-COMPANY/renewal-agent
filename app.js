@@ -1,3 +1,4 @@
+// File: app.js
 const WORKER_ENDPOINT = "https://renewal-agent.gmo-k-watanabe.workers.dev/analyze";
 
 const NG_CATEGORIES = [
@@ -573,6 +574,100 @@ function setupTabs() {
   });
 }
 
+// ========== 進行ステップ表示（多段処理の可視化） ==========
+let _progressTimer = null;
+function startProgress() {
+  const box = document.getElementById("progressSteps");
+  if (!box) return;
+  box.hidden = false;
+  const steps = box.querySelectorAll(".pstep");
+  steps.forEach((s) => s.classList.remove("done", "active"));
+  let idx = 0;
+  const advance = () => {
+    if (idx > 0) steps[idx - 1]?.classList.remove("active");
+    if (idx < steps.length) {
+      steps[idx]?.classList.add("active");
+      if (idx > 0) steps[idx - 1]?.classList.add("done");
+      idx++;
+    }
+  };
+  advance();
+  _progressTimer = setInterval(advance, 6000);
+}
+function finishProgress(success = true) {
+  if (_progressTimer) { clearInterval(_progressTimer); _progressTimer = null; }
+  const box = document.getElementById("progressSteps");
+  if (!box) return;
+  const steps = box.querySelectorAll(".pstep");
+  steps.forEach((s) => {
+    s.classList.remove("active");
+    if (success) s.classList.add("done");
+  });
+}
+
+// ========== CSVダウンロード（集計プレビューの保存） ==========
+function downloadCsv() {
+  const agg = _currentAggregation;
+  if (!agg || agg.perService.length === 0) {
+    const status = document.getElementById("status");
+    if (status) status.textContent = "⚠ 保存できる集計データがありません。先にデータを入力してください。";
+    return;
+  }
+  const word = metricLabel(getCurrentMetric());
+  const rows = [];
+  rows.push(["識別記号別サマリー"]);
+  rows.push(["識別記号", `最新更新${word}率(%)`, `平均更新${word}率(%)`, "加重平均(%)", "推移差分(pt)", "データ数"]);
+  agg.perService.forEach((s) => {
+    rows.push([s.id, s.latestRate, s.avgRate, s.weightedRate, s.trendDelta, s.points.length]);
+  });
+  rows.push([]);
+  rows.push(["全体推移"]);
+  rows.push(["期間", `母数${word}(万円)`, `実績${word}(万円)`, `更新${word}率(%)`]);
+  agg.overallTrend.forEach((t) => {
+    rows.push([t.label, t.base, t.actual, t.rate]);
+  });
+
+  const csv = rows
+    .map((r) => r.map((c) => {
+      const v = String(c ?? "");
+      return /[",\n]/.test(v) ? `"${v.replace(/"/g, '""')}"` : v;
+    }).join(","))
+    .join("\r\n");
+
+  const bom = "\uFEFF"; // Excelで文字化けしないようBOM付与
+  const blob = new Blob([bom + csv], { type: "text/csv;charset=utf-8;" });
+  const a = document.createElement("a");
+  const ts = new Date().toISOString().slice(0, 10);
+  a.href = URL.createObjectURL(blob);
+  a.download = `renext-集計_${ts}.csv`;
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
+  URL.revokeObjectURL(a.href);
+}
+
+// ========== レポートコピー ==========
+async function copyReport() {
+  const box = document.getElementById("result");
+  const btn = document.getElementById("copyReport");
+  if (!box || !box.textContent.trim()) return;
+  try {
+    await navigator.clipboard.writeText(box.textContent);
+    if (btn) {
+      const orig = btn.textContent;
+      btn.textContent = "✅ コピーしました";
+      setTimeout(() => { btn.textContent = orig; }, 1800);
+    }
+  } catch (e) {
+    // クリップボードAPI不可時のフォールバック
+    const range = document.createRange();
+    range.selectNodeContents(box);
+    const sel = window.getSelection();
+    sel.removeAllRanges();
+    sel.addRange(range);
+  }
+}
+
 // ========== Worker送信 ==========
 function hasSensitive(data) {
   const pattern = /(株式会社|有限会社|合同会社|[A-Za-z]{3,}\s?(Inc|Ltd|Corp))/i;
@@ -583,6 +678,7 @@ async function runAnalyze() {
   const status = document.getElementById("status");
   const resultSection = document.getElementById("resultSection");
   const resultBox = document.getElementById("result");
+  const analyzeBtn = document.getElementById("analyzeBtn");
 
   const firstEmpty = validateAllIdFields();
   if (firstEmpty) {
@@ -633,6 +729,8 @@ async function runAnalyze() {
 
   status.textContent = `🤖 AIエージェントが「${payload.metricLabel}」視点で多段分析中です…（10〜30秒）`;
   resultSection.hidden = true;
+  if (analyzeBtn) analyzeBtn.disabled = true;
+  startProgress();
 
   try {
     const res = await fetch(WORKER_ENDPOINT, {
@@ -645,9 +743,19 @@ async function runAnalyze() {
 
     resultBox.textContent = json.report || "（結果が空でした）";
     resultSection.hidden = false;
-    status.textContent = "✅ 分析が完了しました。";
+    finishProgress(true);
+
+    const engineNote =
+      json.engine === "workers-ai-fallback"
+        ? "（予備エンジンで生成）"
+        : "";
+    status.textContent = `✅ 分析が完了しました。${engineNote}`;
+    resultSection.scrollIntoView({ behavior: "smooth", block: "start" });
   } catch (e) {
+    finishProgress(false);
     status.textContent = "❌ エラー: " + e.message;
+  } finally {
+    if (analyzeBtn) analyzeBtn.disabled = false;
   }
 }
 
@@ -656,6 +764,11 @@ document.getElementById("addRow").addEventListener("click", addSalesRow);
 document.getElementById("analyzeBtn").addEventListener("click", runAnalyze);
 document.querySelectorAll('input[name="period"]').forEach((r) => r.addEventListener("change", refreshAllLabelInputs));
 document.querySelectorAll('input[name="metric"]').forEach((r) => r.addEventListener("change", refreshMetricLabels));
+
+const _copyBtn = document.getElementById("copyReport");
+if (_copyBtn) _copyBtn.addEventListener("click", copyReport);
+const _csvBtn = document.getElementById("downloadCsv");
+if (_csvBtn) _csvBtn.addEventListener("click", downloadCsv);
 
 setupTabs();
 addSalesRow();
