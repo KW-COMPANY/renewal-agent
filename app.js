@@ -1,8 +1,16 @@
-const WORKER_ENDPOINT = "https://renewal-agent.gmo-k-watanabe.workers.dev/analyze";
+// File: app.js
+const WORKER_BASE = "https://renewal-agent.gmo-k-watanabe.workers.dev";
+const WORKER_ENDPOINT = WORKER_BASE + "/analyze";
+const FEEDBACK_ENDPOINT = WORKER_BASE + "/feedback";
+const INSIGHTS_ENDPOINT = WORKER_BASE + "/insights";
 
 const NG_CATEGORIES = [
   "効果無し", "費用NG", "サポート対応不満", "倒産・不通", "ご意見", "その他"
 ];
+
+// Closed Loop 用の状態
+let _lastAnalysisId = null;
+let _selectedRating = null;
 
 // ========== 取得ヘルパ ==========
 function getCurrentPeriod() {
@@ -254,6 +262,59 @@ function initNgTable() {
     `;
     tbody.appendChild(tr);
   });
+}
+
+// ========== 追加: 入力例のワンクリック投入（利便性向上） ==========
+function fillSampleData() {
+  // 月次モードに寄せてサンプルを作る（既存のUI挙動を尊重）
+  const monthlyRadio = document.querySelector('input[name="period"][value="monthly"]');
+  if (monthlyRadio && !monthlyRadio.checked) {
+    monthlyRadio.checked = true;
+    refreshAllLabelInputs();
+  }
+
+  // 既存行をクリアして3行に作り直す
+  const tbody = document.querySelector("#salesTable tbody");
+  tbody.innerHTML = "";
+  addSalesRow();
+  addSalesRow();
+  addSalesRow();
+
+  const trs = document.querySelectorAll("#salesTable tbody tr");
+  const sample = [
+    { id: "A", base: "120", actual: "108" },
+    { id: "B", base: "80", actual: "60" },
+    { id: "C", base: "50", actual: "47" }
+  ];
+
+  // 1行目の期間を今月に設定 → 2行目以降へ同期
+  const firstLabel = trs[0]?.querySelector(".s-label");
+  if (firstLabel) {
+    const now = new Date();
+    const ym = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, "0")}`;
+    firstLabel.value = ym;
+    syncLabelsToFirstRow();
+  }
+
+  trs.forEach((tr, i) => {
+    const s = sample[i];
+    if (!s) return;
+    const idEl = tr.querySelector(".s-id");
+    const baseEl = tr.querySelector(".s-base");
+    const actEl = tr.querySelector(".s-actual");
+    if (idEl) { idEl.value = s.id; clearIdError(idEl); }
+    if (baseEl) baseEl.value = s.base;
+    if (actEl) actEl.value = s.actual;
+  });
+
+  // NG理由にもサンプルを投入
+  const ngInputs = document.querySelectorAll(".ng-cnt");
+  const ngSample = [3, 2, 1, 0, 1, 0];
+  ngInputs.forEach((inp, i) => { inp.value = ngSample[i] ?? 0; });
+
+  refreshPreview();
+  const status = document.getElementById("status");
+  if (status) status.textContent = "📝 入力例を投入しました。自由に書き換えて『分析させる』を押してください。";
 }
 
 // ========== ラベル変換 ==========
@@ -744,6 +805,10 @@ async function runAnalyze() {
     resultSection.hidden = false;
     finishProgress(true);
 
+    // 追加: Closed Loop フィードバックUIを表示し、分析IDを保持
+    _lastAnalysisId = json.analysisId || null;
+    showFeedbackUI();
+
     const engineNote =
       json.engine === "workers-ai-fallback"
         ? "（予備エンジンで生成）"
@@ -758,6 +823,86 @@ async function runAnalyze() {
   }
 }
 
+// ========== 追加: Closed Loop フィードバック処理 ==========
+function showFeedbackUI() {
+  const box = document.getElementById("feedbackBox");
+  if (!box) return;
+  box.hidden = false;
+  _selectedRating = null;
+  const up = document.getElementById("fbUp");
+  const down = document.getElementById("fbDown");
+  const send = document.getElementById("fbSend");
+  const comment = document.getElementById("fbComment");
+  const fbStatus = document.getElementById("fbStatus");
+  if (up) up.classList.remove("selected");
+  if (down) down.classList.remove("selected");
+  if (send) send.disabled = true;
+  if (comment) comment.value = "";
+  if (fbStatus) fbStatus.textContent = "";
+}
+
+function selectRating(rating) {
+  _selectedRating = rating;
+  const up = document.getElementById("fbUp");
+  const down = document.getElementById("fbDown");
+  const send = document.getElementById("fbSend");
+  if (up) up.classList.toggle("selected", rating === "up");
+  if (down) down.classList.toggle("selected", rating === "down");
+  if (send) send.disabled = false;
+}
+
+async function sendFeedback() {
+  const send = document.getElementById("fbSend");
+  const fbStatus = document.getElementById("fbStatus");
+  const comment = document.getElementById("fbComment");
+  if (!_selectedRating) {
+    if (fbStatus) fbStatus.textContent = "👍か👎を選んでください。";
+    return;
+  }
+  if (send) send.disabled = true;
+  if (fbStatus) fbStatus.textContent = "送信中…";
+
+  try {
+    const res = await fetch(FEEDBACK_ENDPOINT, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        analysisId: _lastAnalysisId,
+        rating: _selectedRating,
+        comment: comment ? comment.value : "",
+        metricType: getCurrentMetric()
+      })
+    });
+    const json = await res.json().catch(() => ({}));
+    if (!res.ok) throw new Error(json.error || "送信エラー");
+    if (fbStatus) fbStatus.textContent = "✅ ありがとうございます。次回以降の分析に反映されます。";
+    loadInsightsBadge(); // 学習状況バッジを更新
+  } catch (e) {
+    if (fbStatus) fbStatus.textContent = "❌ 送信に失敗しました: " + e.message;
+    if (send) send.disabled = false;
+  }
+}
+
+// ========== 追加: 学習状況バッジ（Closed Loop の可視化） ==========
+async function loadInsightsBadge() {
+  const badge = document.getElementById("loopBadge");
+  if (!badge) return;
+  try {
+    const res = await fetch(INSIGHTS_ENDPOINT, { method: "GET" });
+    const json = await res.json().catch(() => ({}));
+    if (!res.ok) return;
+    const lbInsight = document.getElementById("lbInsight");
+    const lbAnalyze = document.getElementById("lbAnalyze");
+    const lbSat = document.getElementById("lbSat");
+    if (lbInsight) lbInsight.textContent = json.insightCount ?? 0;
+    if (lbAnalyze) lbAnalyze.textContent = json.analyzeCount ?? 0;
+    if (lbSat) lbSat.textContent = json.satisfaction != null ? `${json.satisfaction}%` : "―";
+    badge.hidden = false;
+  } catch {
+    // バッジ取得失敗はUIを止めない
+  }
+}
+
 // ========== 初期化 ==========
 document.getElementById("addRow").addEventListener("click", addSalesRow);
 document.getElementById("analyzeBtn").addEventListener("click", runAnalyze);
@@ -769,9 +914,24 @@ if (_copyBtn) _copyBtn.addEventListener("click", copyReport);
 const _csvBtn = document.getElementById("downloadCsv");
 if (_csvBtn) _csvBtn.addEventListener("click", downloadCsv);
 
+// 追加: 入力例投入ボタン
+const _sampleBtn = document.getElementById("fillSample");
+if (_sampleBtn) _sampleBtn.addEventListener("click", fillSampleData);
+
+// 追加: フィードバックボタン群
+const _fbUp = document.getElementById("fbUp");
+if (_fbUp) _fbUp.addEventListener("click", () => selectRating("up"));
+const _fbDown = document.getElementById("fbDown");
+if (_fbDown) _fbDown.addEventListener("click", () => selectRating("down"));
+const _fbSend = document.getElementById("fbSend");
+if (_fbSend) _fbSend.addEventListener("click", sendFeedback);
+
 setupTabs();
 addSalesRow();
 initNgTable();
 refreshAllLabelInputs();
 refreshMetricLabels();
 refreshPreview();
+
+// 追加: 起動時に学習状況バッジを取得（Closed Loop の稼働状況を表示）
+loadInsightsBadge();
