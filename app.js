@@ -1,4 +1,3 @@
-// File: app.js
 const WORKER_BASE = "https://renewal-agent.gmo-k-watanabe.workers.dev";
 const WORKER_ENDPOINT = WORKER_BASE + "/analyze";
 const FEEDBACK_ENDPOINT = WORKER_BASE + "/feedback";
@@ -8,7 +7,6 @@ const NG_CATEGORIES = [
   "効果無し", "費用NG", "サポート対応不満", "倒産・不通", "ご意見", "その他"
 ];
 
-// Closed Loop 用の状態
 let _lastAnalysisId = null;
 let _selectedRating = null;
 
@@ -264,7 +262,7 @@ function initNgTable() {
   });
 }
 
-// ========== 追加: 入力例のワンクリック投入（利便性向上） ==========
+// ========== 入力例のワンクリック投入 ==========
 function fillSampleData() {
   // 月次モードに寄せてサンプルを作る（既存のUI挙動を尊重）
   const monthlyRadio = document.querySelector('input[name="period"][value="monthly"]');
@@ -634,7 +632,7 @@ function setupTabs() {
   });
 }
 
-// ========== 進行ステップ表示（多段処理の可視化） ==========
+// ========== 進行ステップ表示 ==========
 let _progressTimer = null;
 function startProgress() {
   const box = document.getElementById("progressSteps");
@@ -823,7 +821,7 @@ async function runAnalyze() {
   }
 }
 
-// ========== 追加: Closed Loop フィードバック処理 ==========
+// ========== フィードバック処理 ==========
 function showFeedbackUI() {
   const box = document.getElementById("feedbackBox");
   if (!box) return;
@@ -883,7 +881,7 @@ async function sendFeedback() {
   }
 }
 
-// ========== 追加: 学習状況バッジ（Closed Loop の可視化） ==========
+// ========== 学習状況バッジ ==========
 async function loadInsightsBadge() {
   const badge = document.getElementById("loopBadge");
   if (!badge) return;
@@ -914,11 +912,11 @@ if (_copyBtn) _copyBtn.addEventListener("click", copyReport);
 const _csvBtn = document.getElementById("downloadCsv");
 if (_csvBtn) _csvBtn.addEventListener("click", downloadCsv);
 
-// 追加: 入力例投入ボタン
+// 入力例投入ボタン
 const _sampleBtn = document.getElementById("fillSample");
 if (_sampleBtn) _sampleBtn.addEventListener("click", fillSampleData);
 
-// 追加: フィードバックボタン群
+// フィードバックボタン群
 const _fbUp = document.getElementById("fbUp");
 if (_fbUp) _fbUp.addEventListener("click", () => selectRating("up"));
 const _fbDown = document.getElementById("fbDown");
@@ -933,5 +931,5 @@ refreshAllLabelInputs();
 refreshMetricLabels();
 refreshPreview();
 
-// 追加: 起動時に学習状況バッジを取得（Closed Loop の稼働状況を表示）
+// 起動時に学習状況バッジを取得
 loadInsightsBadge();
