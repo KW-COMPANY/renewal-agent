@@ -1,5 +1,3 @@
-<!-- Output: html -->
-<!-- File: index.html -->
 <!DOCTYPE html>
 <html lang="ja">
 <head>
@@ -16,7 +14,7 @@
     <h1>📊 ReNEXT AI</h1>
     <p class="sub">サービスごとの更新数値やお見合わせの理由から、課題と対応案を自動提案</p>
     <p class="notice">※ 企業名・個人情報・実サービス名は入力しないでください（記号・連番で識別）</p>
-    <!-- 追加: Closed Loop 学習状況バッジ -->
+    <!-- 学習状況バッジ -->
     <div id="loopBadge" class="loop-badge" hidden>
       <span class="loop-item">🧠 学習知見 <strong id="lbInsight">0</strong> 件</span>
       <span class="loop-item">🔁 分析実行 <strong id="lbAnalyze">0</strong> 回</span>
@@ -45,7 +43,7 @@
         ※「売上」を選ぶとトップライン（受注規模）視点、「粗利」を選ぶと収益性視点の分析になります。
       </p>
 
-      <!-- 追加: 入力例のワンクリック投入（初見ユーザーの利便性向上） -->
+      <!-- 入力例のワンクリック投入（初見ユーザーの利便性向上） -->
       <div class="sample-actions">
         <button id="fillSample" type="button" class="ghost">📝 入力例を自動で入れてみる</button>
         <span class="sample-note">迷ったらこちら。あとから自由に書き換えできます。</span>
@@ -123,7 +121,7 @@
       </div>
       <div id="result"></div>
 
-      <!-- 追加: Closed Loop フィードバックUI（Measure→Learn の入口） -->
+      <!-- フィードバックUI（Measure→Learn の入口） -->
       <div id="feedbackBox" class="feedback-box" hidden>
         <p class="feedback-title">このレポートは役に立ちましたか？<span class="feedback-sub">評価するほどAIが賢くなります</span></p>
         <div class="feedback-btns">
@@ -141,7 +139,7 @@
   </main>
 
   <footer>
-    ReNEXT AI ／ 運用するほど賢くなる Closed Loop 型 AIエージェント
+    ReNEXT AI ／ 運用するほど賢くなる AIエージェント
   </footer>
 
   <script src="app.js"></script>
